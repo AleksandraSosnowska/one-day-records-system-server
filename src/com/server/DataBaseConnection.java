@@ -14,32 +14,31 @@ public class DataBaseConnection {
 
 	public DataBaseConnection() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
 			connection = DriverManager.getConnection("jdbc:mysql://149.202.31.190:3306/data", "bazodanowiec",
 					"OlaKuc17");
 			statement = connection.createStatement();
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
 		} catch (Exception ex) {
 			System.out.println("Exception: " + ex.getMessage());
 		}
 	}
 
-	/*void getAllTaskData() {
+	String getAllTaskData(int taskId) {
+		String result = "";
 		try {
-			resultSet = statement.executeQuery("Select * from tasks_data where task_id = 1");
+			resultSet = statement.executeQuery("Select * from tasks_data where task_id = " + taskId);
 			if (resultSet.next()) {
-				System.out.println("Takes place in: " + resultSet.getString("hotel_name")
+				result = "Takes place in: " + resultSet.getString("hotel_name")
 						+ ",\nhotel address: " + resultSet.getString("address")
-						+ ",\ntask starts on: " + resultSet.getTimestamp("start_date")
-						+ ",\nand end on: " + dateFormat.format(resultSet.getTimestamp("end_date")) + "\n\n");
+						+ ",\ntask starts on: " + dateFormat.format(resultSet.getTimestamp("start_date"))
+						+ ",\nand end on: " + dateFormat.format(resultSet.getTimestamp("end_date"));
 			}
 		} catch (SQLException e) {
 			System.out.println("Troubles with connecting to database. Please try one more time later");
 			e.printStackTrace();
 		}
-	}*/
+		return result;
+	}
 
 	String getAllUserData(int curUserIndex) {
 		String result = "";
@@ -47,11 +46,13 @@ public class DataBaseConnection {
 			callableStatement = connection.prepareCall("{CALL GetAllUserData(?)}");
 			callableStatement.setInt(1, curUserIndex);
 			resultSet = callableStatement.executeQuery();
-			result = "Username: " + resultSet.getString("username") + "\n"
-					+ "Password: " + resultSet.getString("password") + "\n"
-					+ "Name: " + resultSet.getString("name") + "\n"
-					+ "Lastname: " + resultSet.getString("Lastname") + "\n"
-					+ "Pesel: " + resultSet.getInt("pesel");
+			if (resultSet.next()) {
+				result = "Username: " + resultSet.getString("username") + "\n"
+						+ "Password: " + resultSet.getString("password") + "\n"
+						+ "Name: " + resultSet.getString("name") + "\n"
+						+ "Lastname: " + resultSet.getString("Lastname") + "\n"
+						+ "Pesel: " + resultSet.getInt("pesel");
+			}
 		} catch (SQLException e) {
 			System.out.println("Troubles with connecting to database. Please try one more time later");
 			e.printStackTrace();

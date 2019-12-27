@@ -37,7 +37,11 @@ public class ResponseHandler extends Thread {
 				if (line.split("\\s+")[0].toLowerCase().trim().equals("getalluserdata")) {
 					String result = dataBaseConnection.getAllUserData(Integer.parseInt(line.split("\\s+")[1]));
 					if(!result.equals("")) serverPrintOut.println(result);
-					else serverPrintOut.println("Error whlie executing procedur");
+					else serverPrintOut.println("Error whlie executing procedure");
+				} else if (line.split("\\s+")[0].toLowerCase().trim().equals("getalltaskdata")) {
+					String result = dataBaseConnection.getAllTaskData(Integer.parseInt(line.split("\\s+")[1]));
+					if(!result.equals("")) serverPrintOut.println(result);
+					else serverPrintOut.println("Error whlie executing procedure");
 				}
 			}
 
