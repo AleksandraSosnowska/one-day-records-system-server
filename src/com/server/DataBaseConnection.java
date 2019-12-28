@@ -59,4 +59,50 @@ public class DataBaseConnection {
 		}
 		return result;
 	}
+
+	static void changeUserData(int curUserIndex, String name, String lastname, String username, String password){
+		try {
+			callableStatement = connection.prepareCall("{CALL ChangeUserData(?, ?, ?, ?, ?)}");
+			callableStatement.setInt(1, curUserIndex);
+			callableStatement.setString(2, name);
+			callableStatement.setString(3, lastname);
+			callableStatement.setString(4, username);
+			callableStatement.setString(5, password);
+			resultSet = callableStatement.executeQuery();
+		} catch (SQLException e) {
+			System.out.println("Troubles with connecting to database. Please try one more time later");
+			e.printStackTrace();
+		}
+	}
+
+	static String showAllTasks() {
+		String result = "";
+		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
+
+		try {
+			resultSet = statement.executeQuery("Select * from tasks_data");
+			while(resultSet.next()){
+				if(resultSet.getTimestamp("start_date").after(currentDate)){
+					if(resultSet.getInt("amount_people_needed") != 0){
+						result = "Task's id: " + resultSet.getInt("task_id") + "\n";
+						result += "Takes place in: " + resultSet.getString("hotel_name")
+								+ ",\nhotel address: " + resultSet.getString("address")
+								+ ",\ntask starts on: " + resultSet.getTimestamp("start_date")
+								+ ",\nand end on: " + resultSet.getTimestamp("end_date");
+					}
+					else{
+						System.out.println("brak miejsc");
+					}
+				}
+				else{
+					System.out.println("Było! ");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
 }
