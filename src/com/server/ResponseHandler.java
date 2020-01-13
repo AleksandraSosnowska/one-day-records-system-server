@@ -26,7 +26,7 @@ public class ResponseHandler extends Thread {
 			Scanner scanner = new Scanner(inputToServer, String.valueOf(StandardCharsets.UTF_8));
 			PrintWriter serverPrintOut = new PrintWriter(new OutputStreamWriter(outputFromServer, StandardCharsets.UTF_8), true);
 
-			serverPrintOut.println("Hello! Print \"exit\" to exit");
+			serverPrintOut.println("ready");
 
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
@@ -34,22 +34,41 @@ public class ResponseHandler extends Thread {
 				if (line.toLowerCase().trim().equals("exit"))
 					break;
 
-				if (line.split("\\s+")[0].toLowerCase().trim().equals("getalluserdata")) {
-					String result = dataBaseConnection.getAllUserData(Integer.parseInt(line.split("\\s+")[1]));
-					if(!result.equals("")) serverPrintOut.println(result);
-					else serverPrintOut.println("Error whlie executing procedure");
-				} else if (line.split("\\s+")[0].toLowerCase().trim().equals("getalltaskdata")) {
-					String result = dataBaseConnection.getAllTaskData(Integer.parseInt(line.split("\\s+")[1]));
-					if(!result.equals("")) serverPrintOut.println(result);
-					else serverPrintOut.println("Error whlie executing procedure");
-				} else if (line.split("\\s+")[0].toLowerCase().trim().equals("showalltasks")) {
-					String result = dataBaseConnection.showAllTasks();
-					if(!result.equals("")) serverPrintOut.println(result);
-					else serverPrintOut.println("Error whlie executing procedure");
-				} else if (line.split("\\s+")[0].toLowerCase().trim().equals("changeuserdata")) {
-					String result = dataBaseConnection.changeUserData(Integer.parseInt(line.split("\\s+")[1])); //name, lastname, username, password
-					if (!result.equals("")) serverPrintOut.println(result);
-					else serverPrintOut.println("Error whlie executing procedure");
+
+				final String[] splittedInput = line.split("\\s+");
+				switch (splittedInput[0].toLowerCase().trim()) {
+					case "getuserdata": {
+						String result = dataBaseConnection.getAllUserData(Integer.parseInt(splittedInput[1]));
+						if (!result.equals("")) serverPrintOut.println(result);
+						else serverPrintOut.println("error");
+						break;
+					}
+					case "gettaskdata": {
+						String result = dataBaseConnection.getAllTaskData(Integer.parseInt(splittedInput[1]));
+						if (!result.equals("")) serverPrintOut.println(result);
+						else serverPrintOut.println("error");
+						break;
+					}
+					case "getallfuturetasks": {
+						String result = dataBaseConnection.getAllFutureTasks();
+						serverPrintOut.println(result);
+						break;
+					}
+					case "changeuserdata": {
+						boolean result = dataBaseConnection.changeUserData(Integer.parseInt(splittedInput[1]),
+								Integer.parseInt(splittedInput[2]), splittedInput[3]);
+						if (result) serverPrintOut.println(result);
+						else serverPrintOut.println("error");
+						break;
+					}
+					case "getfuturetasks": {
+						String result = dataBaseConnection.getFutureTasks(Integer.parseInt(splittedInput[1]));
+						serverPrintOut.println(result);
+						break;
+					}
+					default:
+						serverPrintOut.println("Nope");
+						mySocket.close();
 				}
 			}
 
