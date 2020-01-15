@@ -1,13 +1,13 @@
 package com.server;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Scanner;
-import java.util.TimeZone;
+import java.util.*;
 
 public class ResponseHandler extends Thread {
 	Socket mySocket;
@@ -38,13 +38,13 @@ public class ResponseHandler extends Thread {
 				final String[] splittedInput = line.split("\\s+");
 				switch (splittedInput[0].toLowerCase().trim()) {
 					case "getuserdata": {
-						String result = dataBaseConnection.getAllUserData(Integer.parseInt(splittedInput[1]));
+						String result = dataBaseConnection.getUserData(Integer.parseInt(splittedInput[1]));
 						if (!result.equals("")) serverPrintOut.println(result);
 						else serverPrintOut.println("error");
 						break;
 					}
 					case "gettaskdata": {
-						String result = dataBaseConnection.getAllTaskData(Integer.parseInt(splittedInput[1]));
+						String result = dataBaseConnection.getTaskData(Integer.parseInt(splittedInput[1]));
 						if (!result.equals("")) serverPrintOut.println(result);
 						else serverPrintOut.println("error");
 						break;
@@ -61,10 +61,25 @@ public class ResponseHandler extends Thread {
 						else serverPrintOut.println("error");
 						break;
 					}
-					case "getfuturetasks": {
-						String result = dataBaseConnection.getFutureTasks(Integer.parseInt(splittedInput[1]));
+					case "getfuturetask": {
+						String result = dataBaseConnection.getFutureTask(Integer.parseInt(splittedInput[1]));
 						serverPrintOut.println(result);
 						break;
+					}
+					case "gethistorytask": {
+						String result = dataBaseConnection.getHistoryTasks(Integer.parseInt(splittedInput[1]));
+						serverPrintOut.println(result);
+						break;
+					}
+					case "getnexttask": {
+						int result = dataBaseConnection.getNextTask(Integer.parseInt(splittedInput[1]));
+						if (!(result == 0)) serverPrintOut.println(result);
+						else serverPrintOut.println("error");
+						break;
+					}
+					case "validLoginData": {
+						int userId = dataBaseConnection.validLoginata(splittedInput[1], splittedInput[2]);
+						serverPrintOut.println(userId);
 					}
 					default:
 						serverPrintOut.println("Nope");
@@ -76,24 +91,6 @@ public class ResponseHandler extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	void sendOutput(String body) throws IOException {
-		OutputStream outputFromServer = mySocket.getOutputStream();
-
-		PrintWriter serverPrintOut = new PrintWriter(new OutputStreamWriter(outputFromServer, StandardCharsets.UTF_8), true);
-
-		printHeadersSuccess(serverPrintOut, body.length());
-		serverPrintOut.println(body);
-		serverPrintOut.flush();
-	}
-
-	void printHeadersSuccess(PrintWriter serverPrintOut, int bodyLenght) {
-		serverPrintOut.println("HTTP/1.1 200 Success");
-		serverPrintOut.println("Date: " + getServerTime());
-		serverPrintOut.println("Content-Type: text/html");
-		serverPrintOut.println("Content-Length: " + bodyLenght);
-		serverPrintOut.println();
 	}
 
 	String getServerTime() {

@@ -50,11 +50,11 @@ public class DataBaseConnection {
 			while (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").after(currentDate)) {
 					if (resultSet.getInt("amount_people_needed") != 0) {
-						result = resultSet.getInt("task_id") + ';'
+						result += resultSet.getInt("task_id") + ';'
 								+ resultSet.getString("hotel_name") + ';'
 								+ resultSet.getString("address") + ';'
 								+ resultSet.getTimestamp("start_date") + ';'
-								+ resultSet.getTimestamp("end_date");
+								+ resultSet.getTimestamp("end_date") + '\n';
 					}
 				}
 			}
@@ -91,7 +91,7 @@ public class DataBaseConnection {
 		return nextTask;
 	}
 
-	String getAllTaskData(int taskId) {
+	String getTaskData(int taskId) {
 		String result = "";
 		try {
 			resultSet = statement.executeQuery("Select * from tasks_data where task_id = " + taskId);
@@ -108,7 +108,7 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	String getAllUserData(int userId) {
+	String getUserData(int userId) {
 		String result = "";
 		try {
 			callableStatement = connection.prepareCall("{CALL GetAllUserData(?)}");
@@ -128,7 +128,7 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	String getFutureTasks(int userId) {
+	String getFutureTask(int userId) {
 		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 		String result = "";
 		try {
@@ -141,12 +141,46 @@ public class DataBaseConnection {
 							+ resultSet.getTimestamp("start_date") + ';'
 							+ resultSet.getTimestamp("end_date");
 				}
-			} else {
-				System.out.println("You have no tasks to realize");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	String getHistoryTasks(int userId) {
+		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
+		String result = "";
+		try {
+			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id " +
+					"where records.user_id = " + userId);
+			if (resultSet.next()) {
+				if (resultSet.getTimestamp("start_date").before(currentDate)) {
+					result = resultSet.getString("hotel_name") + ';'
+							+ resultSet.getString("address") + ';'
+							+ resultSet.getTimestamp("start_date") + ';'
+							+ resultSet.getTimestamp("end_date");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	int validLoginata(String username, String password) {
+		int userId = -1;
+		try {
+			resultSet =
+					statement.executeQuery("Select * from users_data where username = \"" + username + "\" and password = \"" + password + "\"");
+			if (resultSet.next()) {
+				if (resultSet.getString("username").equals(username) && resultSet.getString("password").equals(password)) {
+					return resultSet.getInt("user_id");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return userId;
 	}
 }
