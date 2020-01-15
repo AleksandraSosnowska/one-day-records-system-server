@@ -7,7 +7,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.TimeZone;
 
 public class ResponseHandler extends Thread {
 	Socket mySocket;
@@ -57,8 +60,7 @@ public class ResponseHandler extends Thread {
 					case "changeuserdata": {
 						boolean result = dataBaseConnection.changeUserData(Integer.parseInt(splittedInput[1]),
 								Integer.parseInt(splittedInput[2]), splittedInput[3]);
-						if (result) serverPrintOut.println(result);
-						else serverPrintOut.println("error");
+						serverPrintOut.println(result);
 						break;
 					}
 					case "getfuturetask": {
@@ -77,9 +79,16 @@ public class ResponseHandler extends Thread {
 						else serverPrintOut.println("error");
 						break;
 					}
-					case "validLoginData": {
+					case "validlogindata": {
 						int userId = dataBaseConnection.validLoginata(splittedInput[1], splittedInput[2]);
 						serverPrintOut.println(userId);
+						break;
+					}
+					case "addnewuser": {
+						boolean result = dataBaseConnection.addNewUser(splittedInput[1], splittedInput[2], splittedInput[3],
+								splittedInput[4], splittedInput[5]);
+						serverPrintOut.println(result);
+						break;
 					}
 					default:
 						serverPrintOut.println("Nope");

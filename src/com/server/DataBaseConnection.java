@@ -32,8 +32,8 @@ public class DataBaseConnection {
 			callableStatement.setInt(1, userId);
 			callableStatement.setInt(2, whatIsToChangeNumber);
 			callableStatement.setString(3, newData);
-			resultSet = callableStatement.executeQuery();
-			result = resultSet.next();
+			int count = callableStatement.executeUpdate();
+			result = (count > 0);
 		} catch (SQLException e) {
 			System.out.println("Troubles with connecting to database. Please try one more time later");
 			e.printStackTrace();
@@ -42,7 +42,7 @@ public class DataBaseConnection {
 	}
 
 	String getAllFutureTasks() {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 
 		try {
@@ -50,11 +50,11 @@ public class DataBaseConnection {
 			while (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").after(currentDate)) {
 					if (resultSet.getInt("amount_people_needed") != 0) {
-						result += resultSet.getInt("task_id") + ';'
-								+ resultSet.getString("hotel_name") + ';'
-								+ resultSet.getString("address") + ';'
-								+ resultSet.getTimestamp("start_date") + ';'
-								+ resultSet.getTimestamp("end_date") + '\n';
+						result.append(resultSet.getInt("task_id")).append(';')
+								.append(resultSet.getString("hotel_name")).append(';')
+								.append(resultSet.getString("address")).append(';')
+								.append(resultSet.getTimestamp("start_date")).append(';')
+								.append(resultSet.getTimestamp("end_date")).append('\n');
 					}
 				}
 			}
@@ -62,7 +62,7 @@ public class DataBaseConnection {
 			e.printStackTrace();
 		}
 
-		return result;
+		return result.toString();
 	}
 
 	int getNextTask(int userId) {
@@ -182,5 +182,22 @@ public class DataBaseConnection {
 			e.printStackTrace();
 		}
 		return userId;
+	}
+
+	boolean addNewUser(String username, String password, String firstname, String lastname, String pesel) {
+		boolean result = false;
+		try {
+			callableStatement = connection.prepareCall("INSERT INTO users_data (username, password, name, lastname, pesel)" + "VALUES(?, ?, ?, ?, ?)");
+			callableStatement.setString(1, username);
+			callableStatement.setString(2, password);
+			callableStatement.setString(3, firstname);
+			callableStatement.setString(4, lastname);
+			callableStatement.setString(5, pesel);
+			int count = callableStatement.executeUpdate();
+			result = (count > 0);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
