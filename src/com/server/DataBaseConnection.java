@@ -168,7 +168,7 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	int validLoginata(String username, String password) {
+	int validLoginData(String username, String password) {
 		int userId = -1;
 		try {
 			resultSet =
@@ -199,5 +199,95 @@ public class DataBaseConnection {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	boolean validateUsername(String username) {
+		boolean result = false;
+		try {
+			resultSet = statement.executeQuery("Select * from users_data where username = \"" + username + "\"");
+			result = resultSet.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	String getNewTask(int userId, int taskId, String password) {
+		int freePlaces, tasks_amount = 0;
+		try {
+			resultSet = statement.executeQuery("select count(*) from tasks_data");
+			if (resultSet.next()) {
+				tasks_amount = resultSet.getInt(1);
+			}
+			/*if (tasks_amount >= taskId) {*/
+			freePlaces = getFreePlaces(taskId);
+			if (freePlaces != 0) {
+				if (getPass(userId).equals(password)) {
+					if (saveToTask(userId, taskId)) {
+						return getTaskData(taskId);
+					} else {
+						return "error while saving to task";
+					}
+				} else {
+					return "bad password";
+				}
+			} else {
+				return "not enough";
+			}
+			/*} else {
+				return "bad task id";
+			}*/
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	int getFreePlaces(int taskId) {
+		try {
+			resultSet = statement.executeQuery("Select * from tasks_data where task_id = " + taskId);
+			if (resultSet.next()) {
+				return resultSet.getInt("amount_people_needed");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	String getPass(int userId) {
+		try {
+			resultSet = statement.executeQuery("select * from users_data where user_id = " + userId);
+			if (resultSet.next()) {
+				return resultSet.getString("password");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	boolean saveToTask(int userId, int taskId) {
+		try {
+			callableStatement = connection.prepareCall("INSERT INTO records (user_id, task_id)" + "VALUES(?, ?)");
+			callableStatement.setInt(1, userId);
+			callableStatement.setInt(2, taskId);
+			int count = callableStatement.executeUpdate();
+
+			if (count > 0) {
+				/*callableStatement = connection.prepareCall("{?= CALL changePeopleNeeded(?)}");
+				callableStatement.registerOutParameter(1, Types.INTEGER);
+				callableStatement.setInt(1, taskId);
+				resultSet = callableStatement.executeQuery();*/
+
+				callableStatement = connection.prepareCall("{CALL changePeopleNum(?)}");
+				callableStatement.setInt(1, taskId);
+				int count2 = callableStatement.executeUpdate();
+				return (count2 > 0);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

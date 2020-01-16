@@ -6,11 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 import java.util.Scanner;
-import java.util.TimeZone;
 
 public class ResponseHandler extends Thread {
 	Socket mySocket;
@@ -80,13 +76,25 @@ public class ResponseHandler extends Thread {
 						break;
 					}
 					case "validlogindata": {
-						int userId = dataBaseConnection.validLoginata(splittedInput[1], splittedInput[2]);
+						int userId = dataBaseConnection.validLoginData(splittedInput[1], splittedInput[2]);
 						serverPrintOut.println(userId);
 						break;
 					}
 					case "addnewuser": {
 						boolean result = dataBaseConnection.addNewUser(splittedInput[1], splittedInput[2], splittedInput[3],
 								splittedInput[4], splittedInput[5]);
+						serverPrintOut.println(result);
+						break;
+					}
+					case "validateusername": {
+						boolean result = dataBaseConnection.validateUsername(splittedInput[1]);
+						serverPrintOut.println(result);
+						break;
+					}
+					case "getnewtask": {
+						String result = dataBaseConnection.getNewTask(Integer.parseInt(splittedInput[1]),
+								Integer.parseInt(splittedInput[2]),
+								splittedInput[3]);
 						serverPrintOut.println(result);
 						break;
 					}
@@ -100,13 +108,5 @@ public class ResponseHandler extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	String getServerTime() {
-		Calendar calendar = Calendar.getInstance();
-		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		return dateFormat.format(calendar.getTime());
 	}
 }
