@@ -290,4 +290,17 @@ public class DataBaseConnection {
 		}
 		return false;
 	}
+
+	boolean ifJoinYet(int userId, int taskId){
+		try {
+			resultSet = statement.executeQuery("Select * from records where user_id = " + userId);
+			while(resultSet.next()){
+				if(resultSet.getInt("task_id") == taskId)
+					return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

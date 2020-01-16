@@ -98,6 +98,12 @@ public class ResponseHandler extends Thread {
 						serverPrintOut.println(result);
 						break;
 					}
+					case "ifjoinyet": {
+						boolean result = dataBaseConnection.ifJoinYet(Integer.parseInt(splittedInput[1]),
+								Integer.parseInt(splittedInput[2]));
+						serverPrintOut.println(result);
+						break;
+					}
 					default:
 						serverPrintOut.println("Nope");
 						mySocket.close();
