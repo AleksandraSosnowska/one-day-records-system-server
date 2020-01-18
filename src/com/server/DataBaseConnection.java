@@ -95,7 +95,8 @@ public class DataBaseConnection {
 				result = resultSet.getString("hotel_name") + ';'
 						+ resultSet.getString("address") + ';'
 						+ dateFormat.format(resultSet.getTimestamp("start_date")) + ';'
-						+ dateFormat.format(resultSet.getTimestamp("end_date"));
+						+ dateFormat.format(resultSet.getTimestamp("end_date")) + ';'
+						+ resultSet.getString("amount_people_needed");
 			}
 		} catch (SQLException e) {
 			System.out.println("Troubles with connecting to database. Please try one more time later");
@@ -128,8 +129,8 @@ public class DataBaseConnection {
 		String result = "";
 		try {
 			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
-			while(resultSet.next()){
-				if(resultSet.getTimestamp("start_date").after(new Timestamp(System.currentTimeMillis()))){
+			while (resultSet.next()) {
+				if (resultSet.getTimestamp("start_date").after(new Timestamp(System.currentTimeMillis()))) {
 					result = resultSet.getInt("task_id") + ";" +
 							resultSet.getString("hotel_name") + ";" +
 							resultSet.getString("address") + ";" +
@@ -216,7 +217,7 @@ public class DataBaseConnection {
 		boolean result = true;
 		try {
 			resultSet = statement.executeQuery("Select * from users_data where username = \"" + username + "\"");
-			if(!resultSet.next())
+			if (!resultSet.next())
 				result = false;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -298,10 +299,10 @@ public class DataBaseConnection {
 		return false;
 	}
 
-	boolean ifJoinYet(int userId, int taskId){
+	boolean ifJoinYet(int userId, int taskId) {
 		try {
 			resultSet = statement.executeQuery("Select * from records where user_id = \"" + userId + "\" and task_id = \"" + taskId);
-			if(resultSet.next()){
+			if (resultSet.next()) {
 				return true;
 			}
 		} catch (SQLException e) {
@@ -316,8 +317,8 @@ public class DataBaseConnection {
 			preparedStatement = connection.prepareStatement("Select * from tasks_data WHERE tasks_data.task_id NOT IN (SELECT task_id FROM records WHERE user_id = ?)");
 			preparedStatement.setInt(1, userId);
 			resultSet = preparedStatement.executeQuery();
-			while(resultSet.next()){
-				if(resultSet.getInt("amount_people_needed") > 0){
+			while (resultSet.next()) {
+				if (resultSet.getInt("amount_people_needed") > 0) {
 					result = resultSet.getInt("task_id") + ';' +
 							resultSet.getString("hotel_name") + ';' +
 							resultSet.getString("address") + ';' +
@@ -338,7 +339,7 @@ public class DataBaseConnection {
 			preparedStatement.setInt(1, taskId);
 			int count = preparedStatement.executeUpdate();
 
-			if(count > 0) {
+			if (count > 0) {
 				preparedStatement = connection.prepareStatement("DELETE FROM records WHERE task_id = ?");
 				preparedStatement.setInt(1, taskId);
 				int count2 = preparedStatement.executeUpdate();
@@ -355,8 +356,8 @@ public class DataBaseConnection {
 		String result = "";
 		try {
 			resultSet = statement.executeQuery("Select * from users_data WHERE ifAdmin is NULL");
-			while(resultSet.next()){
-				if(resultSet.getInt("amount_people_needed") > 0){
+			while (resultSet.next()) {
+				if (resultSet.getInt("amount_people_needed") > 0) {
 					result = resultSet.getInt("user_id") + ';' +
 							resultSet.getString("username") + ';' +
 							resultSet.getString("password") + ';' +
@@ -371,7 +372,7 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	< E > boolean updateTask(int taskId, String toChange, E data) {
+	<E> boolean updateTask(int taskId, String toChange, E data) {
 		boolean result = false;
 		try {
 			preparedStatement = connection.prepareStatement("UPDATE tasks_data SET \"" + toChange + "\" = \"" + data + "\" WHERE task_id = ?");
