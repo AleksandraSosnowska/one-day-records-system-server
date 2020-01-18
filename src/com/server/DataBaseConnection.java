@@ -202,10 +202,11 @@ public class DataBaseConnection {
 	}
 
 	boolean validateUsername(String username) {
-		boolean result = false;
+		boolean result = true;
 		try {
 			resultSet = statement.executeQuery("Select * from users_data where username = \"" + username + "\"");
-			result = resultSet.next();
+			if(!resultSet.next())
+				result = false;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
