@@ -52,7 +52,8 @@ public class DataBaseConnection {
 						.append(resultSet.getString("hotel_name")).append(';')
 						.append(resultSet.getString("address")).append(';')
 						.append(resultSet.getTimestamp("start_date")).append(';')
-						.append(resultSet.getTimestamp("end_date")).append('/');
+						.append(resultSet.getTimestamp("end_date")).append(';')
+						.append(resultSet.getInt("amount_people_needed")).append('/');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
