@@ -146,7 +146,7 @@ public class ResponseHandler extends Thread {
 						break;
 					}
 					case "updatetask": {
-						boolean result = dataBaseConnection.updateTask(Integer.parseInt(splittedInput[1]), splittedInput[2], splittedInput[3]);
+						boolean result = dataBaseConnection.updateTask(Integer.parseInt(splittedInput[1]), Integer.parseInt(splittedInput[2]), splittedInput[3]);
 						serverPrintOut.println(result);
 						break;
 					}

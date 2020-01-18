@@ -1,6 +1,7 @@
 package com.server;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -373,16 +374,47 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	<E> boolean updateTask(int taskId, String toChange, E data) {
+	boolean updateTask(int taskId, int toChange, String data) {
 		boolean result = false;
 		try {
-			preparedStatement = connection.prepareStatement("UPDATE tasks_data SET \"" + toChange + "\" = \"" + data + "\" WHERE task_id = ?");
-			//preparedStatement.set(1, new_hotel);
-			preparedStatement.setInt(1, taskId);
-			//preparedStatement.execute();
+			switch(toChange){
+				case 1: {
+					preparedStatement = connection.prepareStatement("UPDATE tasks_data SET hotel_name = ? WHERE task_id = ?");
+					preparedStatement.setString(1, data);
+					preparedStatement.setInt(2, taskId);
+					break;
+				}
+				case 2: {
+					preparedStatement = connection.prepareStatement("UPDATE tasks_data SET address = ? WHERE task_id = ?");
+					preparedStatement.setString(1, data);
+					preparedStatement.setInt(2, taskId);
+					break;
+				}
+				case 3: {
+					Timestamp start = new Timestamp(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(data).getTime());
+					preparedStatement = connection.prepareStatement("UPDATE tasks_data SET start_date = ? WHERE task_id = ?");
+					preparedStatement.setTimestamp(1, start);
+					preparedStatement.setInt(2, taskId);
+					break;
+				}
+				case 4: {
+					Timestamp end = new Timestamp(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(data).getTime());
+					preparedStatement = connection.prepareStatement("UPDATE tasks_data SET end_date = ? WHERE task_id = ?");
+					preparedStatement.setTimestamp(1, end);
+					preparedStatement.setInt(2, taskId);
+					break;
+				}
+				case 5: {
+					preparedStatement = connection.prepareStatement("UPDATE tasks_data SET amount_people_needed = ? WHERE task_id = ?");
+					preparedStatement.setInt(1, Integer.parseInt(data));
+					preparedStatement.setInt(2, taskId);
+					break;
+				}
+
+			}
 			int count = preparedStatement.executeUpdate();
 			result = (count > 0);
-		} catch (SQLException e) {
+		} catch (SQLException | ParseException e) {
 			e.printStackTrace();
 		}
 		return result;
