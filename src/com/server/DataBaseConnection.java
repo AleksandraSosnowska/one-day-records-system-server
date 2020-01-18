@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings({"SqlDialectInspection"})
 public class DataBaseConnection {
 
-	private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
 	public static Connection connection;
 	public static Statement statement;
 	public static CallableStatement callableStatement;
