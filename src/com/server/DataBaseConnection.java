@@ -168,20 +168,19 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	int validLoginData(String username, String password) {
-		int userId = -1;
+	String validLoginData(String username, String password) {
 		try {
 			resultSet =
 					statement.executeQuery("Select * from users_data where username = \"" + username + "\" and password = \"" + password + "\"");
 			if (resultSet.next()) {
 				if (resultSet.getString("username").equals(username) && resultSet.getString("password").equals(password)) {
-					return resultSet.getInt("user_id");
+					return Integer.toString(resultSet.getInt("user_id")) + ';' + resultSet.getBoolean("ifAdmin");
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return userId;
+		return "";
 	}
 
 	boolean addNewUser(String username, String password, String firstname, String lastname, String pesel) {
@@ -276,11 +275,6 @@ public class DataBaseConnection {
 			int count = callableStatement.executeUpdate();
 
 			if (count > 0) {
-				/*callableStatement = connection.prepareCall("{?= CALL changePeopleNeeded(?)}");
-				callableStatement.registerOutParameter(1, Types.INTEGER);
-				callableStatement.setInt(1, taskId);
-				resultSet = callableStatement.executeQuery();*/
-
 				callableStatement = connection.prepareCall("{CALL changePeopleNum(?)}");
 				callableStatement.setInt(1, taskId);
 				int count2 = callableStatement.executeUpdate();

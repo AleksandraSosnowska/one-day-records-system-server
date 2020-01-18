@@ -76,8 +76,8 @@ public class ResponseHandler extends Thread {
 						break;
 					}
 					case "validlogindata": {
-						int userId = dataBaseConnection.validLoginData(splittedInput[1], splittedInput[2]);
-						serverPrintOut.println(userId);
+						String result = dataBaseConnection.validLoginData(splittedInput[1], splittedInput[2]);
+						serverPrintOut.println(result);
 						break;
 					}
 					case "addnewuser": {
