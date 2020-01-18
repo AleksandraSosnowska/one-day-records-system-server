@@ -174,7 +174,7 @@ public class DataBaseConnection {
 					statement.executeQuery("Select * from users_data where username = \"" + username + "\" and password = \"" + password + "\"");
 			if (resultSet.next()) {
 				if (resultSet.getString("username").equals(username) && resultSet.getString("password").equals(password)) {
-					return Integer.toString(resultSet.getInt("user_id")) + ';' + resultSet.getInt("isAdmin");
+					return Integer.toString(resultSet.getInt("user_id")) + ' ' + resultSet.getInt("isAdmin");
 				}
 			}
 		} catch (SQLException e) {
