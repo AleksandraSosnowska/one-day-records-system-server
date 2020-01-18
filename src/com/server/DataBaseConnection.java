@@ -52,7 +52,7 @@ public class DataBaseConnection {
 						.append(resultSet.getString("hotel_name")).append(';')
 						.append(resultSet.getString("address")).append(';')
 						.append(resultSet.getTimestamp("start_date")).append(';')
-						.append(resultSet.getTimestamp("end_date")).append('\n');
+						.append(resultSet.getTimestamp("end_date")).append('/');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -154,7 +154,7 @@ public class DataBaseConnection {
 							+ resultSet.getString("address") + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + "\n";
+							resultSet.getInt("amount_people_needed") + "/";
 				}
 			}
 		} catch (SQLException e) {
