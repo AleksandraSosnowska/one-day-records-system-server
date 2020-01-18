@@ -13,6 +13,7 @@ public class DataBaseConnection {
 	public static Statement statement;
 	public static CallableStatement callableStatement;
 	public static ResultSet resultSet;
+	public static PreparedStatement preparedStatement;
 
 	public DataBaseConnection() {
 		try {
@@ -43,20 +44,15 @@ public class DataBaseConnection {
 
 	String getAllFutureTasks() {
 		StringBuilder result = new StringBuilder();
-		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 
 		try {
 			resultSet = statement.executeQuery("Select * from tasks_data");
 			while (resultSet.next()) {
-				if (resultSet.getTimestamp("start_date").after(currentDate)) {
-					if (resultSet.getInt("amount_people_needed") != 0) {
-						result.append(resultSet.getInt("task_id")).append(';')
-								.append(resultSet.getString("hotel_name")).append(';')
-								.append(resultSet.getString("address")).append(';')
-								.append(resultSet.getTimestamp("start_date")).append(';')
-								.append(resultSet.getTimestamp("end_date")).append('\n');
-					}
-				}
+				result.append(resultSet.getInt("task_id")).append(';')
+						.append(resultSet.getString("hotel_name")).append(';')
+						.append(resultSet.getString("address")).append(';')
+						.append(resultSet.getTimestamp("start_date")).append(';')
+						.append(resultSet.getTimestamp("end_date")).append('\n');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -128,18 +124,18 @@ public class DataBaseConnection {
 		return result;
 	}
 
-	String getFutureTask(int userId) {
-		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
+	String getFutureTasks(int userId) {
 		String result = "";
 		try {
-			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id " +
-					"where records.user_id = " + userId);
-			if (resultSet.next()) {
-				if (resultSet.getTimestamp("start_date").after(currentDate)) {
-					result = resultSet.getString("hotel_name") + ';'
-							+ resultSet.getString("address") + ';'
-							+ resultSet.getTimestamp("start_date") + ';'
-							+ resultSet.getTimestamp("end_date");
+			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
+			while(resultSet.next()){
+				if(resultSet.getTimestamp("start_date").after(new Timestamp(System.currentTimeMillis()))){
+					result = resultSet.getInt("task_id") + ";" +
+							resultSet.getString("hotel_name") + ";" +
+							resultSet.getString("address") + ";" +
+							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ";" +
+							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
+							resultSet.getInt("amount_people_needed");
 				}
 			}
 		} catch (SQLException e) {
@@ -149,17 +145,16 @@ public class DataBaseConnection {
 	}
 
 	String getHistoryTasks(int userId) {
-		Timestamp currentDate = new Timestamp(System.currentTimeMillis());
 		String result = "";
 		try {
-			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id " +
-					"where records.user_id = " + userId);
+			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
 			if (resultSet.next()) {
-				if (resultSet.getTimestamp("start_date").before(currentDate)) {
+				if (resultSet.getTimestamp("start_date").before(new Timestamp(System.currentTimeMillis()))) {
 					result = resultSet.getString("hotel_name") + ';'
 							+ resultSet.getString("address") + ';'
-							+ resultSet.getTimestamp("start_date") + ';'
-							+ resultSet.getTimestamp("end_date");
+							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';'
+							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
+							resultSet.getInt("amount_people_needed") + "\n";
 				}
 			}
 		} catch (SQLException e) {
@@ -192,6 +187,23 @@ public class DataBaseConnection {
 			callableStatement.setString(3, firstname);
 			callableStatement.setString(4, lastname);
 			callableStatement.setString(5, pesel);
+			int count = callableStatement.executeUpdate();
+			result = (count > 0);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	boolean addNewTask(String hotel_name, String address, Timestamp start_date, Timestamp end_date, String amount_people_needed) {
+		boolean result = false;
+		try {
+			callableStatement = connection.prepareCall("INSERT INTO tasks_data (hotel_name, address, start_date, end_date, amount_people_needed)" + "VALUES(?, ?, ?, ?, ?)");
+			callableStatement.setString(1, hotel_name);
+			callableStatement.setString(2, address);
+			callableStatement.setTimestamp(3, start_date);
+			callableStatement.setTimestamp(4, end_date);
+			callableStatement.setInt(5, Integer.parseInt(amount_people_needed));
 			int count = callableStatement.executeUpdate();
 			result = (count > 0);
 		} catch (SQLException e) {
@@ -288,14 +300,89 @@ public class DataBaseConnection {
 
 	boolean ifJoinYet(int userId, int taskId){
 		try {
-			resultSet = statement.executeQuery("Select * from records where user_id = " + userId);
-			while(resultSet.next()){
-				if(resultSet.getInt("task_id") == taskId)
-					return true;
+			resultSet = statement.executeQuery("Select * from records where user_id = \"" + userId + "\" and task_id = \"" + taskId);
+			if(resultSet.next()){
+				return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	String getFutureTasksUser(int userId) {
+		String result = "";
+		try {
+			preparedStatement = connection.prepareStatement("Select * from tasks_data WHERE tasks_data.task_id NOT IN (SELECT task_id FROM records WHERE user_id = ?)");
+			preparedStatement.setInt(1, userId);
+			resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()){
+				if(resultSet.getInt("amount_people_needed") > 0){
+					result = resultSet.getInt("task_id") + ';' +
+							resultSet.getString("hotel_name") + ';' +
+							resultSet.getString("address") + ';' +
+							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';' +
+							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ';' +
+							resultSet.getInt("amount_people_needed") + "\n";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	boolean deleteTaskAndRecords(int taskId) {
+		try {
+			preparedStatement = connection.prepareStatement("DELETE FROM tasks_data WHERE task_id = ?");
+			preparedStatement.setInt(1, taskId);
+			int count = preparedStatement.executeUpdate();
+
+			if(count > 0) {
+				preparedStatement = connection.prepareStatement("DELETE FROM records WHERE task_id = ?");
+				preparedStatement.setInt(1, taskId);
+				int count2 = preparedStatement.executeUpdate();
+				return (count2 > 0);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	String getNoAdminUsers() {
+		String result = "";
+		try {
+			resultSet = statement.executeQuery("Select * from users_data WHERE ifAdmin is NULL");
+			while(resultSet.next()){
+				if(resultSet.getInt("amount_people_needed") > 0){
+					result = resultSet.getInt("user_id") + ';' +
+							resultSet.getString("username") + ';' +
+							resultSet.getString("password") + ';' +
+							resultSet.getString("name") + ';' +
+							resultSet.getString("lastname") + ';' +
+							resultSet.getString("pesel") + "\n";
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	< E > boolean updateTask(int taskId, String toChange, E data) {
+		boolean result = false;
+		try {
+			preparedStatement = connection.prepareStatement("UPDATE tasks_data SET \"" + toChange + "\" = \"" + data + "\" WHERE task_id = ?");
+			//preparedStatement.set(1, new_hotel);
+			preparedStatement.setInt(1, taskId);
+			//preparedStatement.execute();
+			int count = preparedStatement.executeUpdate();
+			result = (count > 0);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
