@@ -54,7 +54,7 @@ public class DataBaseConnection {
 						.append(resultSet.getString("address")).append(';')
 						.append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
 						.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(';')
-						.append(resultSet.getInt("amount_people_needed")).append('/');
+						.append(resultSet.getInt("amount_people_needed")).append('\n');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -133,12 +133,12 @@ public class DataBaseConnection {
 			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
 			while (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").after(new Timestamp(System.currentTimeMillis()))) {
-					result = resultSet.getInt("task_id") + ";" +
+					result += resultSet.getInt("task_id") + ";" +
 							resultSet.getString("hotel_name") + ";" +
 							resultSet.getString("address") + ";" +
 							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ";" +
 							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed");
+							resultSet.getInt("amount_people_needed") + '\n';
 				}
 			}
 		} catch (SQLException e) {
@@ -153,11 +153,11 @@ public class DataBaseConnection {
 			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
 			if (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").before(new Timestamp(System.currentTimeMillis()))) {
-					result = resultSet.getString("hotel_name") + ';'
+					result += resultSet.getString("hotel_name") + ';'
 							+ resultSet.getString("address") + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + "/";
+							resultSet.getInt("amount_people_needed") + "\n";
 				}
 			}
 		} catch (SQLException e) {
@@ -321,7 +321,7 @@ public class DataBaseConnection {
 			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				if (resultSet.getInt("amount_people_needed") > 0) {
-					result = resultSet.getInt("task_id") + ';' +
+					result += resultSet.getInt("task_id") + ';' +
 							resultSet.getString("hotel_name") + ';' +
 							resultSet.getString("address") + ';' +
 							dateFormat.format(resultSet.getTimestamp("start_date")) + ';' +
@@ -357,16 +357,14 @@ public class DataBaseConnection {
 	String getNoAdminUsers() {
 		String result = "";
 		try {
-			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin = '0'");
+			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin = 0");
 			while (resultSet.next()) {
-				if (resultSet.getInt("amount_people_needed") > 0) {
-					result = resultSet.getInt("user_id") + ';' +
+					result += resultSet.getInt("user_id") + ';' +
 							resultSet.getString("username") + ';' +
 							resultSet.getString("password") + ';' +
 							resultSet.getString("name") + ';' +
 							resultSet.getString("lastname") + ';' +
-							resultSet.getString("pesel") + "\n";
-				}
+							resultSet.getString("pesel") + '\n';
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
