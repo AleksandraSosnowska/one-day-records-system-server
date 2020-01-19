@@ -314,25 +314,22 @@ public class DataBaseConnection {
 	}
 
 	String getFutureTasksUser(int userId) {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		try {
 			preparedStatement = connection.prepareStatement("Select * from tasks_data WHERE tasks_data.task_id NOT IN (SELECT task_id FROM records WHERE user_id = ?)");
 			preparedStatement.setInt(1, userId);
 			resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				if (resultSet.getInt("amount_people_needed") > 0) {
-					result += resultSet.getInt("task_id") + ';' +
-							resultSet.getString("hotel_name") + ';' +
-							resultSet.getString("address") + ';' +
-							dateFormat.format(resultSet.getTimestamp("start_date")) + ';' +
-							dateFormat.format(resultSet.getTimestamp("end_date")) + ';' +
-							resultSet.getInt("amount_people_needed") + '=';
+					result.append(resultSet.getInt("task_id")).append(';').append(resultSet.getString("hotel_name")).append(';')
+							.append(resultSet.getString("address")).append(';').append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
+							.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(';').append(resultSet.getInt("amount_people_needed")).append('=');
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return result.toString();
 	}
 
 	boolean deleteTaskAndRecords(int taskId) {
