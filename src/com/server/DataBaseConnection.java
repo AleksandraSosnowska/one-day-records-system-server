@@ -128,42 +128,37 @@ public class DataBaseConnection {
 	}
 
 	String getFutureTasks(int userId) {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		try {
 			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
 			while (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").after(new Timestamp(System.currentTimeMillis()))) {
-					result += resultSet.getInt("task_id") + ";" +
-							resultSet.getString("hotel_name") + ";" +
-							resultSet.getString("address") + ";" +
-							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ";" +
-							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + '=';
+					result.append(resultSet.getInt("task_id")).append(";").append(resultSet.getString("hotel_name")).append(";")
+							.append(resultSet.getString("address")).append(";").append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(";")
+							.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(";").append(resultSet.getInt("amount_people_needed")).append('=');
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return result.toString();
 	}
 
 	String getHistoryTasks(int userId) {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		try {
 			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
-			if (resultSet.next()) {
+			while (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").before(new Timestamp(System.currentTimeMillis()))) {
-					result += resultSet.getString("hotel_name") + ';'
-							+ resultSet.getString("address") + ';'
-							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';'
-							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + '=';
+					result.append(resultSet.getString("hotel_name")).append(';').append(resultSet.getString("address")).append(';')
+							.append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
+							.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(";").append(resultSet.getInt("amount_people_needed")).append('=');
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return result.toString();
 	}
 
 	String validLoginData(String username, String password) {
