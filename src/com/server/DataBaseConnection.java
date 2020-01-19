@@ -52,8 +52,8 @@ public class DataBaseConnection {
 				result.append(resultSet.getInt("task_id")).append(';')
 						.append(resultSet.getString("hotel_name")).append(';')
 						.append(resultSet.getString("address")).append(';')
-						.append(resultSet.getTimestamp("start_date")).append(';')
-						.append(resultSet.getTimestamp("end_date")).append(';')
+						.append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
+						.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(';')
 						.append(resultSet.getInt("amount_people_needed")).append('/');
 			}
 		} catch (SQLException e) {
@@ -324,8 +324,8 @@ public class DataBaseConnection {
 					result = resultSet.getInt("task_id") + ';' +
 							resultSet.getString("hotel_name") + ';' +
 							resultSet.getString("address") + ';' +
-							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';' +
-							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ';' +
+							dateFormat.format(resultSet.getTimestamp("start_date")) + ';' +
+							dateFormat.format(resultSet.getTimestamp("end_date")) + ';' +
 							resultSet.getInt("amount_people_needed") + "\n";
 				}
 			}
