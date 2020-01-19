@@ -376,7 +376,6 @@ public class DataBaseConnection {
 
 	boolean updateTask(int taskId, int toChange, String data) {
 		boolean result = false;
-		data = data.replaceAll("\\\\", " ");
 		try {
 			switch(toChange){
 				case 1: {

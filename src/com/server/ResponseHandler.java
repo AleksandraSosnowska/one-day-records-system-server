@@ -37,7 +37,7 @@ public class ResponseHandler extends Thread {
 					break;
 
 
-				final String[] splittedInput = line.split("\\s+");
+				final String[] splittedInput = line.split(";+");
 				switch (splittedInput[0].toLowerCase().trim()) {
 					case "getuserdata": {
 						String result = dataBaseConnection.getUserData(Integer.parseInt(splittedInput[1]));
