@@ -359,7 +359,7 @@ public class DataBaseConnection {
 		try {
 			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin = 0");
 			while (resultSet.next()) {
-					result.append(resultSet.getInt("user_id")).append(';').append(resultSet.getString("username")).append(';').append(resultSet.getString("password")).append(';').append(resultSet.getString("name")).append(';').append(resultSet.getString("lastname")).append(';').append(resultSet.getString("pesel")).append('\n');
+					result.append(resultSet.getInt("user_id")).append(';').append(resultSet.getString("name")).append(';').append(resultSet.getString("lastname")).append(';').append(resultSet.getString("username")).append(';').append(resultSet.getString("pesel")).append('\n');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
