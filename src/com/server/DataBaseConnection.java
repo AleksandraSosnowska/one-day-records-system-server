@@ -54,7 +54,7 @@ public class DataBaseConnection {
 						.append(resultSet.getString("address")).append(';')
 						.append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
 						.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(';')
-						.append(resultSet.getInt("amount_people_needed")).append('\n');
+						.append(resultSet.getInt("amount_people_needed")).append('=');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -138,7 +138,7 @@ public class DataBaseConnection {
 							resultSet.getString("address") + ";" +
 							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ";" +
 							new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + '\n';
+							resultSet.getInt("amount_people_needed") + '=';
 				}
 			}
 		} catch (SQLException e) {
@@ -157,7 +157,7 @@ public class DataBaseConnection {
 							+ resultSet.getString("address") + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + "\n";
+							resultSet.getInt("amount_people_needed") + "=";
 				}
 			}
 		} catch (SQLException e) {
@@ -326,7 +326,7 @@ public class DataBaseConnection {
 							resultSet.getString("address") + ';' +
 							dateFormat.format(resultSet.getTimestamp("start_date")) + ';' +
 							dateFormat.format(resultSet.getTimestamp("end_date")) + ';' +
-							resultSet.getInt("amount_people_needed") + "\n";
+							resultSet.getInt("amount_people_needed") + "=";
 				}
 			}
 		} catch (SQLException e) {
@@ -359,7 +359,7 @@ public class DataBaseConnection {
 		try {
 			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin = 0");
 			while (resultSet.next()) {
-					result.append(resultSet.getInt("user_id")).append(';').append(resultSet.getString("name")).append(';').append(resultSet.getString("lastname")).append(';').append(resultSet.getString("username")).append(';').append(resultSet.getString("pesel")).append('\n');
+					result.append(resultSet.getInt("user_id")).append(';').append(resultSet.getString("name")).append(';').append(resultSet.getString("lastname")).append(';').append(resultSet.getString("username")).append(';').append(resultSet.getString("pesel")).append('=');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
