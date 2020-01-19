@@ -355,21 +355,16 @@ public class DataBaseConnection {
 	}
 
 	String getNoAdminUsers() {
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		try {
 			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin = 0");
 			while (resultSet.next()) {
-					result += resultSet.getInt("user_id") + ';' +
-							resultSet.getString("username") + ';' +
-							resultSet.getString("password") + ';' +
-							resultSet.getString("name") + ';' +
-							resultSet.getString("lastname") + ';' +
-							resultSet.getString("pesel") + '\n';
+					result.append(resultSet.getInt("user_id")).append(';').append(resultSet.getString("username")).append(';').append(resultSet.getString("password")).append(';').append(resultSet.getString("name")).append(';').append(resultSet.getString("lastname")).append(';').append(resultSet.getString("pesel")).append('\n');
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return result.toString();
 	}
 
 	boolean updateTask(int taskId, int toChange, String data) {
