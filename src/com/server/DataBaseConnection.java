@@ -157,7 +157,7 @@ public class DataBaseConnection {
 							+ resultSet.getString("address") + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("start_date")) + ';'
 							+ new SimpleDateFormat("dd-MM-yyyy HH:mm").format(resultSet.getTimestamp("end_date")) + ";" +
-							resultSet.getInt("amount_people_needed") + "=";
+							resultSet.getInt("amount_people_needed") + '=';
 				}
 			}
 		} catch (SQLException e) {
@@ -326,7 +326,7 @@ public class DataBaseConnection {
 							resultSet.getString("address") + ';' +
 							dateFormat.format(resultSet.getTimestamp("start_date")) + ';' +
 							dateFormat.format(resultSet.getTimestamp("end_date")) + ';' +
-							resultSet.getInt("amount_people_needed") + "=";
+							resultSet.getInt("amount_people_needed") + '=';
 				}
 			}
 		} catch (SQLException e) {
