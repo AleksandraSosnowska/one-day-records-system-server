@@ -357,7 +357,7 @@ public class DataBaseConnection {
 	String getNoAdminUsers() {
 		String result = "";
 		try {
-			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin is NULL");
+			resultSet = statement.executeQuery("Select * from users_data WHERE isAdmin = '0'");
 			while (resultSet.next()) {
 				if (resultSet.getInt("amount_people_needed") > 0) {
 					result = resultSet.getInt("user_id") + ';' +
