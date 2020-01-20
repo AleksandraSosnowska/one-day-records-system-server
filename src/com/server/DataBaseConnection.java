@@ -118,7 +118,7 @@ public class DataBaseConnection {
 						+ resultSet.getString("password") + ';'
 						+ resultSet.getString("name") + ';'
 						+ resultSet.getString("Lastname") + ';'
-						+ resultSet.getInt("pesel");
+						+ resultSet.getString("pesel");
 			}
 		} catch (SQLException e) {
 			System.out.println("Troubles with connecting to database. Please try one more time later");
