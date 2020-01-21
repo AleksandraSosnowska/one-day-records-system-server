@@ -150,8 +150,8 @@ public class DataBaseConnection {
 			resultSet = statement.executeQuery("Select * from tasks_data join records on records.task_id = tasks_data.task_id where records.user_id = " + userId);
 			while (resultSet.next()) {
 				if (resultSet.getTimestamp("start_date").before(new Timestamp(System.currentTimeMillis()))) {
-					result.append(resultSet.getString("hotel_name")).append(';').append(resultSet.getString("address")).append(';')
-							.append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
+					result.append(resultSet.getInt("task_id")).append(";").append(resultSet.getString("hotel_name")).append(';')
+							.append(resultSet.getString("address")).append(';').append(dateFormat.format(resultSet.getTimestamp("start_date"))).append(';')
 							.append(dateFormat.format(resultSet.getTimestamp("end_date"))).append(";").append(resultSet.getInt("amount_people_needed")).append('=');
 				}
 			}
